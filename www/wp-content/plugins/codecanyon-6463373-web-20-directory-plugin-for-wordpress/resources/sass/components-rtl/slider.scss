@@ -1,0 +1,87 @@
+/************************ W2DC & BX Slider CSS rules ************************/
+.bx-wrapper .bx-viewport {
+	left: 0 !important;
+	direction: ltr;
+	min-height: 113px;
+}
+.bx-wrapper .bx-controls-direction a {
+	outline: 0 none !important;
+	z-index: 1;
+}
+/* This rule needed for BXSlider for bx-viewport */
+/* img.wp-post-image {
+	max-width: 100%;
+	height: auto; Make sure images with WordPress-added height and width attributes are scaled correctly
+} */
+.w2dc-slider {
+	display: none;
+	height: 100%;
+}
+.w2dc-slider .slide {
+	height: 100%;
+}
+.w2dc-slider .slide > a {
+	display: block;
+	/*height: 100%;
+	position: relative; */
+}
+.w2dc-slider .slide img {
+	opacity: 0.5;
+	cursor: pointer;
+	height: auto !important;
+}
+.w2dc-slider .slide img:hover, .w2dc-slider .slide-active img {
+	opacity: 1;
+}
+.w2dc-content.w2dc-slider-wrapper {
+	clear: both;
+}
+/* It works with devices width less than 768 pixels. */
+@media screen and (max-width: $mobile-screen-width) {
+	.w2dc-content.w2dc-slider-wrapper {
+		max-width: 100% !important;
+	}
+}
+.w2dc-big-slide {
+	text-align: center;
+	overflow: hidden;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	/* background-size: contain; */
+}
+/* It works with devices width less than 768 pixels. */
+@media screen and (max-width: $mobile-screen-width) {
+	.w2dc-big-slide {
+		background-size: contain;
+	}
+}
+.w2dc-big-slide-wrapper a {
+	display: block;
+}
+.w2dc-big-slide-wrapper {
+	background: none repeat scroll 0 0 #fff;
+	border: 5px solid #fff;
+	box-shadow: 0 0 5px #ccc;
+	transform: translateZ(0px);
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+.w2dc-big-slide-caption {
+	background: none repeat scroll 0 0 rgba(80, 80, 80, 0.75);
+	bottom: 0;
+	left: 0;
+	position: relative;
+	width: 100%;
+}
+.w2dc-big-slide-caption span {
+	color: #fff;
+	display: block;
+	font-family: Arial;
+	padding: 10px;
+	font-weight: bold;
+	text-align: left;
+}
+.bx-wrapper .bx-prev, .bx-wrapper .bx-next {
+	transition: none;
+}

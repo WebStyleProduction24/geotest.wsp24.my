@@ -1,0 +1,53 @@
+.ui-widget-content.w2dc-dropdowns-menu {
+	background-color: $dropdown-menu-background-color;
+}
+/* full screen map requires menu to have giant z-index (when it is not on sticky-scroll map)  */
+body > .w2dc-dropdowns-menu {
+	z-index: 100002;
+}
+.w2dc-dropdowns-menu-search-parents {
+	display: block;
+	font-size: 10px;
+	color: $dropdown-menu-item-parents-color;
+}
+.w2dc-dropdowns-menu-search-parents b {
+	color: $dropdown-menu-item-parents-bold-color;
+}
+.w2dc-dropdowns-menu-search-root {
+	display: inline-flex;
+	align-items: center;
+	min-height: 42px;
+	font-weight: bold;
+}
+.w2dc-dropdowns-menu-search b {
+	display: contents;
+}
+.w2dc-dropdowns-menu.ui-autocomplete {
+	max-height: 400px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.w2dc-content .ui-selectmenu-menu .ui-icon,
+.w2dc-dropdowns-menu.ui-autocomplete .ui-icon {
+	width: 24px;
+	height: 24px;
+}
+.w2dc-dropdowns-menu.ui-menu .ui-menu-item {
+	color: $dropdown-menu-item-text-color;
+	padding: 3px 3px 3px 30px !important;
+	font-family: inherit;
+	font-size: 15px;
+	border: none;
+	border-bottom: 1px solid $dropdown-menu-item-border-color;
+}
+.w2dc-dropdowns-menu.ui-menu .ui-menu-item.ui-state-hover,
+.w2dc-dropdowns-menu.ui-menu .ui-menu-item.ui-state-focus {
+	border: none;
+	border-bottom: 1px solid $dropdown-menu-item-border-color;
+	background: none;
+	background-color: $dropdown-menu-item-hover-color;
+	font-weight: inherit;
+	color: $dropdown-menu-item-text-color;
+	margin: 0;
+	padding: 3px 3px 3px 30px !important;
+}

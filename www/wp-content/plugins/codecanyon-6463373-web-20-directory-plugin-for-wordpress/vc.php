@@ -1,0 +1,439 @@
+<?php
+
+add_action('vc_before_init', 'w2dc_vc_init');
+
+function w2dc_vc_init() {
+	global $w2dc_instance, $w2dc_fsubmit_instance;
+	
+	if (!isset($w2dc_instance->content_fields)) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		return ;
+	}
+
+	if (!function_exists('w2dc_ordering_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('ordering', 'w2dc_ordering_param');
+		function w2dc_ordering_param($settings, $value) {
+			$ordering = w2dc_orderingItems();
+
+			$out = '<select id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value">';
+			foreach ($ordering AS $ordering_item) {
+				//$out .= '<option value="' . $ordering_item['value'] . '" ' . selected($value, $ordering_item['value'], false) . '>' . $ordering_item['label'] . '</option>';
+				echo "<option value=\"{$ordering_item['value']}\" " . selected($value, $ordering_item['value']) . ">{$ordering_item['label']}</option>";
+			}
+			$out .= '</select>';
+	
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_mapstyle_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('mapstyle', 'w2dc_mapstyle_param');
+		function w2dc_mapstyle_param($settings, $value) {
+			global $w2dc_maps_styles;
+
+			$out = '<select id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value">';
+			$out .= '<option value="0" ' . ((!$value) ? 'selected' : 0) . '>' . __('Default', 'W2DC') . '</option>';
+			$map_styles = array('default' => '');
+			foreach ($w2dc_maps_styles AS $name=>$style) {
+				$out .= '<option value="' . $name . '" ' . selected($value, $name, false) . '>' . $name . '</option>';
+			}
+			$out .= '</select>';
+	
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_directories_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('directories', 'w2dc_directories_param');
+		function w2dc_directories_param($settings, $value) {
+			global $w2dc_instance;
+
+			$out = "<script>
+				function updateTagChecked() { jQuery('#" . $settings['param_name'] . "').val(jQuery('#" . $settings['param_name'] . "_select').val()); }
+			
+				jQuery(function() {
+					jQuery('#" . $settings['param_name'] . "_select option').click(updateTagChecked);
+					updateTagChecked();
+				});
+			</script>";
+
+			$out .= '<select id="' . $settings['param_name'] . '_select" name="' . $settings['param_name'] . '_select">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : 0) . '>' . __('- Auto -', 'W2DC') . '</option>';
+			foreach ($w2dc_instance->directories->directories_array AS $directory) {
+				$out .= '<option value="' . $directory->id . '" ' . selected($value, $directory->id, false) . '>' . $directory->name . '</option>';
+			}
+			$out .= '</select>';
+			$out .= '<input type="hidden" id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value" value="' . $value . '" />';
+			return $out;
+		}
+	}
+	
+	if (!function_exists('w2dc_directory_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('directory', 'w2dc_directory_param');
+		function w2dc_directory_param($settings, $value) {
+			global $w2dc_instance;
+
+			$out = '<select id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : 0) . '>' . __('- Auto -', 'W2DC') . '</option>';
+			foreach ($w2dc_instance->directories->directories_array AS $directory) {
+				$out .= '<option value="' . $directory->id . '" ' . selected($value, $directory->id, false) . '>' . $directory->name . '</option>';
+			}
+			$out .= '</select>';
+	
+			return $out;
+		}
+	}
+	
+	if (!function_exists('w2dc_levels_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('levels', 'w2dc_levels_param');
+		function w2dc_levels_param($settings, $value) {
+			global $w2dc_instance;
+	
+			$out = "<script>
+				function updateTagChecked() { jQuery('#" . $settings['param_name'] . "').val(jQuery('#" . $settings['param_name'] . "_select').val()); }
+		
+				jQuery(function() {
+					jQuery('#" . $settings['param_name'] . "_select option').click(updateTagChecked);
+					updateTagChecked();
+				});
+			</script>";
+	
+			$out .= '<select id="' . $settings['param_name'] . '_select" name="' . $settings['param_name'] . '_select">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : 0) . '>' . __('- Auto -', 'W2DC') . '</option>';
+			foreach ($w2dc_instance->levels->levels_array AS $level) {
+				$out .= '<option value="' . $level->id . '" ' . selected($value, $level->id, false) . '>' . $level->name . '</option>';
+			}
+			$out .= '</select>';
+			$out .= '<input type="hidden" id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value" value="' . $value . '" />';
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_levels_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('level', 'w2dc_level_param');
+		function w2dc_level_param($settings, $value) {
+			global $w2dc_instance;
+
+			$out = '<select id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : 0) . '>' . __('- Auto -', 'W2DC') . '</option>';
+			foreach ($w2dc_instance->levels->levels_array AS $level) {
+				$out .= '<option value="' . $level->id . '" ' . selected($value, $level->id, false) . '>' . $level->name . '</option>';
+			}
+			$out .= '</select>';
+	
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_categories_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('categoriesfield', 'w2dc_categories_param');
+		function w2dc_categories_param($settings, $value) {
+			$out = "<script>
+				function updateTagChecked() { jQuery('#" . $settings['param_name'] . "').val(jQuery('#" . $settings['param_name'] . "_select').val()); }
+		
+				jQuery(function() {
+					jQuery('#" . $settings['param_name'] . "_select option').click(updateTagChecked);
+					updateTagChecked();
+				});
+			</script>";
+		
+			$out .= '<select multiple="multiple" id="' . $settings['param_name'] . '_select" name="' . $settings['param_name'] . '_select" style="height: 300px">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : '') . '>' . __('- Select All -', 'W2DC') . '</option>';
+			ob_start();
+			w2dc_renderOptionsTerms(W2DC_CATEGORIES_TAX, 0, explode(',', $value));
+			$out .= ob_get_clean();
+			$out .= '</select>';
+			$out .= '<input type="hidden" id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value" value="' . $value . '" />';
+		
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_category_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('categoryfield', 'w2dc_category_param');
+		function w2dc_category_param($settings, $value) {
+			$out = '<select id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : '') . '>' . __('- No category selected -', 'W2DC') . '</option>';
+			ob_start();
+			w2dc_renderOptionsTerms(W2DC_CATEGORIES_TAX, 0, array($value));
+			$out .= ob_get_clean();
+			$out .= '</select>';
+		
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_locations_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('locationsfield', 'w2dc_locations_param');
+		function w2dc_locations_param($settings, $value) {
+			$out = "<script>
+				function updateTagChecked() { jQuery('#" . $settings['param_name'] . "').val(jQuery('#" . $settings['param_name'] . "_select').val()); }
+		
+				jQuery(function() {
+					jQuery('#" . $settings['param_name'] . "_select option').click(updateTagChecked);
+					updateTagChecked();
+				});
+			</script>";
+		
+			$out .= '<select multiple="multiple" id="' . $settings['param_name'] . '_select" name="' . $settings['param_name'] . '_select" style="height: 300px">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : '') . '>' . __('- Select All -', 'W2DC') . '</option>';
+			ob_start();
+			w2dc_renderOptionsTerms(W2DC_LOCATIONS_TAX, 0, explode(',', $value));
+			$out .= ob_get_clean();
+			$out .= '</select>';
+			$out .= '<input type="hidden" id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value" value="' . $value . '" />';
+		
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_location_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('locationfield', 'w2dc_location_param');
+		function w2dc_location_param($settings, $value) {
+			$out = '<select id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : '') . '>' . __('- No location selected -', 'W2DC') . '</option>';
+			ob_start();
+			w2dc_renderOptionsTerms(W2DC_LOCATIONS_TAX, 0, array($value));
+			$out .= ob_get_clean();
+			$out .= '</select>';
+		
+			return $out;
+		}
+	}
+
+	if (!function_exists('w2dc_content_fields_param')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+		vc_add_shortcode_param('contentfields', 'w2dc_content_fields_param');
+		function w2dc_content_fields_param($settings, $value) {
+			global $w2dc_instance;
+			$out = "<script>
+				function updateTagChecked() { jQuery('#" . $settings['param_name'] . "').val(jQuery('#" . $settings['param_name'] . "_select').val()); }
+		
+				jQuery(function() {
+					jQuery('#" . $settings['param_name'] . "_select option').click(updateTagChecked);
+					updateTagChecked();
+				});
+			</script>";
+
+			$content_fields_ids = explode(',', $value);
+			$out .= '<select multiple="multiple" id="' . $settings['param_name'] . '_select" name="' . $settings['param_name'] . '_select" style="height: 300px">';
+			$out .= '<option value="" ' . ((!$value) ? 'selected' : '') . '>' . __('- All content fields -', 'W2DC') . '</option>';
+			$out .= '<option value="" ' . (($value == -1) ? 'selected' : '') . '>' . __('- No content fields -', 'W2DC') . '</option>';
+			foreach ($w2dc_instance->search_fields->search_fields_array AS $search_field)
+				$out .= '<option value="' . $search_field->content_field->id . '" ' . (in_array($search_field->content_field->id, $content_fields_ids) ? 'selected' : '') . '>' . $search_field->content_field->name . '</option>';
+			$out .= '</select>';
+			$out .= '<input type="hidden" id="' . $settings['param_name'] . '" name="' . $settings['param_name'] . '" class="wpb_vc_param_value" value="' . $value . '" />';
+		
+			return $out;
+		}
+	}
+	
+	$vc_directory_args = array(
+		'name'                    => __('Web 2.0 Directory', 'W2DC'),
+		'description'             => __('Main shortcode', 'W2DC'),
+		'base'                    => 'webdirectory',
+		'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+		'show_settings_on_create' => true,
+		'category'                => __('Directory Content', 'W2DC'),
+		'params'                  => array(
+			array(
+					'type' => 'dropdown',
+					'param_name' => 'custom_home',
+					'value' => array(__('No', 'W2DC') => '0', __('Yes', 'W2DC') => '1'),
+					'heading' => __('Is it on custom home page?', 'W2DC'),
+			),
+			array(
+					'type' => 'directory',
+					'param_name' => 'id',
+					'heading' => __('Select Directory', 'W2DC'),
+			)
+		),
+	);
+	vc_map($vc_directory_args);
+	
+	global $w2dc_levels_table_widget_params;
+	if ($w2dc_fsubmit_instance) {
+		$vc_submit_args = array(
+			'name'                    => __('Listings submit', 'W2DC'),
+			'description'             => __('Listings submission pages', 'W2DC'),
+			'base'                    => 'webdirectory-submit',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => false,
+			'category'                => __('Directory Content', 'W2DC'),
+			'params'                  => $w2dc_levels_table_widget_params
+		);
+		vc_map($vc_submit_args);
+
+		$vc_pricing_table_args = array(
+			'name'                    => __('Pricing table', 'W2DC'),
+			'description'             => __('Listings levels table. Works in the same way as 1st step on Listings submit, displays only pricing table. Note, that page with Listings submit element required.', 'W2DC'),
+			'base'                    => 'webdirectory-levels-table',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => false,
+			'category'                => __('Directory Content', 'W2DC'),
+			'params'                  => $w2dc_levels_table_widget_params
+		);
+		vc_map($vc_pricing_table_args);
+
+		vc_map( array(
+			'name'                    => __('Users Dashboard', 'W2DC'),
+			'description'             => __('Directory frontend dashboard', 'W2DC'),
+			'base'                    => 'webdirectory-dashboard',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => false,
+			'category'                => __('Directory Content', 'W2DC'),
+		));
+	}
+	
+	global $w2dc_listings_widget_params;
+	$vc_listings_args = array(
+		'name'                    => __('Directory Listings', 'W2DC'),
+		'description'             => __('Directory listings filtered by params', 'W2DC'),
+		'base'                    => 'webdirectory-listings',
+		'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+		'show_settings_on_create' => true,
+		'category'                => __('Directory Content', 'W2DC'),
+		'params'                  => $w2dc_listings_widget_params
+	);
+	vc_map($vc_listings_args);
+	
+	vc_map(array(
+			'name'                    => __('Single Listing', 'W2DC'),
+			'description'             => __('The page with specific listing', 'W2DC'),
+			'base'                    => 'webdirectory-listing',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => true,
+			'category'                => __('Directory Content', 'W2DC'),
+			'params'                  => array(
+					array(
+							'type' => 'textfield',
+							'param_name' => 'listing_id',
+							'heading' => __('ID of listing', 'W2DC'),
+							'description' => __('Enter exact ID of listing.', 'W2DC'),
+					),
+					array(
+							'type' => 'directory',
+							'param_name' => 'directory',
+							'heading' => __('Select Directory', 'W2DC'),
+					)
+			),
+		)
+	);
+
+	global $w2dc_map_widget_params;
+	$vc_maps_args = array(
+			'name'                    => __('Directory Map', 'W2DC'),
+			'description'             => __('Directory map and markers', 'W2DC'),
+			'base'                    => 'webdirectory-map',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => true,
+			'category'                => __('Directory Content', 'W2DC'),
+			'params'                  => $w2dc_map_widget_params
+	);
+	vc_map($vc_maps_args);
+
+	global $w2dc_categories_widget_params;
+	vc_map( array(
+		'name'                    => __('Categories List', 'W2DC'),
+		'description'             => __('Directory categories list', 'W2DC'),
+		'base'                    => 'webdirectory-categories',
+		'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+		'show_settings_on_create' => true,
+		'category'                => __('Directory Content', 'W2DC'),
+		'params'                  => $w2dc_categories_widget_params,
+	));
+
+	global $w2dc_locations_widget_params;
+	vc_map( array(
+		'name'                    => __('Locations List', 'W2DC'),
+		'description'             => __('Directory locations list', 'W2DC'),
+		'base'                    => 'webdirectory-locations',
+		'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+		'show_settings_on_create' => true,
+		'category'                => __('Directory Content', 'W2DC'),
+		'params'                  => $w2dc_locations_widget_params
+	));
+
+	global $w2dc_search_widget_params;
+	$vc_search_args = array(
+		'name'                    => __('Search form', 'W2DC'),
+		'description'             => __('Directory listings search form', 'W2DC'),
+		'base'                    => 'webdirectory-search',
+		'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+		'show_settings_on_create' => false,
+		'category'                => __('Directory Content', 'W2DC'),
+		'params'                  => $w2dc_search_widget_params
+	);
+	vc_map($vc_search_args);
+
+	global $w2dc_slider_widget_params;
+	$vc_slider_args = array(
+			'name'                    => __('Listings slider', 'W2DC'),
+			'description'             => __('Directory listings in slider view', 'W2DC'),
+			'base'                    => 'webdirectory-slider',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => true,
+			'category'                => __('Directory Content', 'W2DC'),
+			'params'                  => $w2dc_slider_widget_params
+	);
+	vc_map($vc_slider_args);
+	
+	global $w2dc_buttons_widget_params;
+	$vc_front_buttons_args = array(
+			'name'                    => __('Front buttons', 'W2DC'),
+			'description'             => __('Submit listing, my bookmarks, edit listing, print listing, ....', 'W2DC'),
+			'base'                    => 'webdirectory-buttons',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => false,
+			'category'                => __('Directory Content', 'W2DC'),
+			'params'                  => $w2dc_buttons_widget_params
+	);
+	vc_map($vc_front_buttons_args);
+	
+	vc_map(array(
+			'name'                    => __('Listing page', 'W2DC'),
+			'description'             => __('Single listing "template" page', 'W2DC'),
+			'base'                    => 'webdirectory-listing-page',
+			'icon'                    => W2DC_RESOURCES_URL . 'images/webdirectory.png',
+			'show_settings_on_create' => false,
+			'category'                => __('Directory Content', 'W2DC'),
+			'params'                  => array(
+					array(
+							'type' => 'directory',
+							'param_name' => 'directory',
+							'heading' => __('Select Directory', 'W2DC'),
+					)
+			),
+		)
+	);
+
+}
+
+if (!function_exists('w2dc_custom_templates_vc')) { // some "unique" themes/plugins call vc_before_init more than ones - this is such protection
+	add_action('vc_load_default_templates_action', 'w2dc_custom_templates_vc');
+	function w2dc_custom_templates_vc() {
+		$data               = array();
+		$data['name']       = __('Directory custom homepage 1', 'W2DC');
+		$data['content']    = <<<CONTENT
+	        [vc_row][vc_column width="2/3"][webdirectory-search columns="2"][webdirectory custom_home="1"][/vc_column][vc_column width="1/3"][webdirectory-categories parent="0" depth="1" columns="1" subcats="1" count="1" categories="0" custom_home="1" levels="0"][webdirectory-map custom_home="1" sticky_scroll="1" sticky_scroll_toppadding="25" height="100%"][/vc_column][/vc_row]
+CONTENT;
+	
+		vc_add_default_templates($data);
+	
+		$data               = array();
+		$data['name']       = __('Directory custom homepage 2', 'W2DC');
+		$data['content']    = <<<CONTENT
+	        [vc_row][vc_column width="1/1"][webdirectory-search columns="2"][/vc_column][/vc_row][vc_row][vc_column width="1/2"][webdirectory-slider slides="10" height="350" slide_width="130" max_slides="4" sticky_featured="0" order_by="post_date" order="ASC" field_methods_of_payment="0" order_by_rand="0" auto_slides="1" auto_slides_delay="3000"][/vc_column][vc_column width="1/2"][webdirectory-map custom_home="1" height="500"][/vc_column][/vc_row][vc_row][vc_column width="1/1"][webdirectory-buttons][webdirectory custom_home="1"][/vc_column][/vc_row]
+CONTENT;
+	
+		vc_add_default_templates($data);
+		
+		$data               = array();
+		$data['name']       = __('Directory custom homepage 3', 'W2DC');
+		$data['content']    = <<<CONTENT
+	        [vc_row][vc_column width="1/2"][webdirectory-map custom_home="1" sticky_scroll="1" sticky_scroll_toppadding="20" height="100%"][/vc_column][vc_column width="1/2"][webdirectory custom_home="1"][/vc_column][/vc_row][vc_row el_class="w2dc-scroller-bottom"][/vc_row]
+CONTENT;
+	
+		vc_add_default_templates($data);
+	}
+}
+
+?>
